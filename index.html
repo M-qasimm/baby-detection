@@ -1,0 +1,12 @@
+<!-- Host this HTML in your GitHub repo -->
+<video id="video" autoplay playsinline>
+  <source src="http://[IP_WEBCAM_ADDRESS]:8080/video" type="application/x-mpegURL">
+</video>
+<script>
+  // Load model and predict
+  const model = await tmImage.load("https://[username].github.io/[repo]/model.json");
+  setInterval(() => {
+    const predictions = await model.predict(video);
+    window.AppInventor.setWebViewString(predictions);
+  }, 2000);
+</script>
