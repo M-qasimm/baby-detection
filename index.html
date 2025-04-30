@@ -1,12 +1,35 @@
-<!-- Host this HTML in your GitHub repo -->
-<video id="video" autoplay playsinline>
-  <source src="http://[IP_WEBCAM_ADDRESS]:8080/video" type="application/x-mpegURL">
-</video>
-<script>
-  // Load model and predict
-  const model = await tmImage.load("https://[username].github.io/[repo]/model.json");
-  setInterval(() => {
-    const predictions = await model.predict(video);
-    window.AppInventor.setWebViewString(predictions);
-  }, 2000);
-</script>
+ <!DOCTYPE html>
+<html>
+<head>
+  <title>Baby Detector</title>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+</head>
+<body>
+  <video id="webcam" autoplay playsinline width="300" height="200"></video>
+  <p id="label">Loading model...</p>
+
+  <script type="text/javascript">
+    const URL = "./";
+    let model, webcam, labelContainer;
+
+    async function init() {
+      model = await tmImage.load(URL + "model.json", URL + "metadata.json");
+      const flip = true;
+      webcam = new tmImage.Webcam(300, 200, flip);
+      await webcam.setup();
+      await webcam.play();
+      window.requestAnimationFrame(loop);
+      document.getElementById("webcam").srcObject = webcam.webcam;
+    }
+
+    async function loop() {
+      webcam.update();
+      const prediction = await model.predict(webcam.canvas);
+      document.getElementById("label").innerText = prediction[0].className + ": " + Math.round(prediction[0].probability * 100) + "%";
+      window.requestAnimationFrame(loop);
+    }
+
+    init();
+  </script>
+</body>
+</html>
