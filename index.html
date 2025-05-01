@@ -1,35 +1,58 @@
  <!DOCTYPE html>
 <html>
-<head>
-  <title>Baby Detector</title>
-  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
-</head>
-<body>
-  <video id="webcam" autoplay playsinline width="300" height="200"></video>
-  <p id="label">Loading model...</p>
+  <head>
+    <title>Baby Detection</title>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+    <style>
+      video {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        margin-bottom: 10px;
+      }
+      #label {
+        font-size: 20px;
+        font-weight: bold;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Baby Detection Model</h2>
+    <video id="webcam" autoplay playsinline width="300" height="200"></video>
+    <p id="label">Loading model...</p>
 
-  <script type="text/javascript">
-    const URL = "./";
-    let model, webcam, labelContainer;
+    <script type="text/javascript">
+      const URL = "./BABY MODEL/"; // path to your model folder
+      let model, webcam;
 
-    async function init() {
-      model = await tmImage.load(URL + "model.json", URL + "metadata.json");
-      const flip = true;
-      webcam = new tmImage.Webcam(300, 200, flip);
-      await webcam.setup();
-      await webcam.play();
-      window.requestAnimationFrame(loop);
-      document.getElementById("webcam").srcObject = webcam.webcam;
-    }
+      async function init() {
+        try {
+          model = await tmImage.load(URL + "model.json", URL + "metadata.json");
+          document.getElementById("label").innerText = "Model loaded.";
+          webcam = new tmImage.Webcam(300, 200, true);
+          await webcam.setup();
+          await webcam.play();
+          window.requestAnimationFrame(loop);
+          document.getElementById("webcam").srcObject = webcam.webcam;
+        } catch (err) {
+          document.getElementById("label").innerText = "Error: " + err.message;
+          console.error(err);
+        }
+      }
 
-    async function loop() {
-      webcam.update();
-      const prediction = await model.predict(webcam.canvas);
-      document.getElementById("label").innerText = prediction[0].className + ": " + Math.round(prediction[0].probability * 100) + "%";
-      window.requestAnimationFrame(loop);
-    }
+      async function loop() {
+        webcam.update();
+        const prediction = await model.predict(webcam.canvas);
+        let top = prediction[0];
+        for (let p of prediction) {
+          if (p.probability > top.probability) top = p;
+        }
+        document.getElementById("label").innerText =
+          top.className + ": " + Math.round(top.probability * 100) + "%";
+        window.requestAnimationFrame(loop);
+      }
 
-    init();
-  </script>
-</body>
+      init();
+    </script>
+  </body>
 </html>
