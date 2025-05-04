@@ -26,7 +26,7 @@
 
         // Load Teachable Machine model from GitHub
         async function loadModel() {
-            const modelURL = "https://raw.githubusercontent.com/M-qasimm/baby-detection/main/model.json"; // Raw URL for model
+            const modelURL = "https://raw.githubusercontent.com/M-qasimm/baby-detection/refs/heads/main/model.json"; // Raw URL for model
             const metadataURL = "https://raw.githubusercontent.com/M-qasimm/baby-detection/main/metadata.json"; // Raw URL for metadata
             const model = await tmImage.load(modelURL, metadataURL); // Load model and metadata
             console.log("Model loaded!");
