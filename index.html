@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Baby Detection</title>
+    <!-- TensorFlow.js and Teachable Machine -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image"></script> <!-- Correct import for image model -->
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@1.0.0"></script> <!-- Teachable Machine Image Model -->
 </head>
 <body>
     <h1>Live Baby Detection</h1>
     <video id="webcam" width="640" height="480" autoplay></video>
-    <div id="predictionResult"></div> <!-- Add a place to show prediction -->
+    <div id="predictionResult"></div> <!-- Display prediction results -->
 
     <script>
         const video = document.getElementById("webcam");
@@ -25,18 +26,18 @@
 
         // Load Teachable Machine model from GitHub
         async function loadModel() {
-            const modelURL = "https://raw.githubusercontent.com/M-qasimm/baby-detection/main/model.json"; // Correct raw URL
-            const metadataURL = "https://raw.githubusercontent.com/M-qasimm/baby-detection/main/metadata.json"; // Correct raw metadata URL
-            const model = await tmImage.load(modelURL, metadataURL); // Load both model and metadata
+            const modelURL = "https://raw.githubusercontent.com/M-qasimm/baby-detection/main/model.json"; // Raw URL for model
+            const metadataURL = "https://raw.githubusercontent.com/M-qasimm/baby-detection/main/metadata.json"; // Raw URL for metadata
+            const model = await tmImage.load(modelURL, metadataURL); // Load model and metadata
             console.log("Model loaded!");
-            predict(model); // Start predicting once model is loaded
+            predict(model); // Start predicting after model is loaded
         }
 
         // Predict from webcam feed
         async function predict(model) {
-            const prediction = await model.predict(video); // Predict from the webcam video feed
-            console.log(prediction);  // For debugging purposes, log the predictions
-            updatePredictionDisplay(prediction); // Update the prediction results on the page
+            const prediction = await model.predict(video); // Predict from video
+            console.log(prediction);  // Log prediction results for debugging
+            updatePredictionDisplay(prediction); // Update the prediction results in the UI
             requestAnimationFrame(() => predict(model)); // Keep predicting in a loop
         }
 
